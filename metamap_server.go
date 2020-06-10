@@ -20,6 +20,10 @@ type MetamapInstance struct {
 	Control chan bool
 }
 
+func (m *MetamapInstance) SendClose(){
+	m.Control <- true
+}
+
 func (m *MetamapInstance) Cleanup() {
 	close(m.TextInput)
 	close(m.MappedOutput)
@@ -29,7 +33,7 @@ func (m *MetamapInstance) Cleanup() {
 // spawn a new MetaMap slave process; returns struct with 
 // i/o and control channels
 func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) *MetamapInstance {
-	in_channel := make(chan string)
+	in_channel := make(chan string, 100)
 	res_channel := make(chan outputFormatter.MMOs)
 	done_channel := make(chan bool)
 
@@ -116,7 +120,7 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 	for {
 		select {
 		case more_input := <-text_to_map:
-			// fmt.Println("got input: ---->", more_input, "<-----")
+			fmt.Println("got input: ---->", more_input, "<-----")
 			start_time := time.Now()
 			buf_writer.WriteString(more_input + "\n\n")
 			buf_writer.Flush()
@@ -126,6 +130,7 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 			decoded.ParseTime = time.Since(start_time)
 			decoded.RawXML = result
 			mappedMmos <- *decoded
+			break // Process until done
 		case <-done:
 			fmt.Println("done, time to kill")
 			// clean up
@@ -135,6 +140,7 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 				fmt.Printf("Error killing process: %s", err.Error())
 			}
 			fmt.Printf("Killed!")
+
 			break
 		}
 	}

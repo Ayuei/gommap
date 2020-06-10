@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="427640ea-5741-443a-975c-d1aece46230f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/minimalFormatter.go" beforeDir="false" afterPath="$PROJECT_DIR$/minimalFormatter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputFormatter/mmo_struct.go" beforeDir="false" afterPath="$PROJECT_DIR$/outputFormatter/mmo_struct.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metamap_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/metamap_server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,9 +59,9 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="817" y="389" key="#Go_Modules/0.0.2048.1112/2560.0.2048.1112@0.0.2048.1112" timestamp="1591770930918" />
-    <state x="621" y="209" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591775198173">
+    <state x="621" y="209" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591775851270">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="621" y="209" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2048.1112/2560.0.2048.1112@0.0.2048.1112" timestamp="1591775198173" />
+    <state x="621" y="209" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2048.1112/2560.0.2048.1112@0.0.2048.1112" timestamp="1591775851270" />
   </component>
 </project>
