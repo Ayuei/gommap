@@ -1,7 +1,7 @@
-package mini
+package metamap
 
 import (
-	"metamap"
+	"gommap/metamap/outputFormatter"
 	"time"
 )
 
@@ -11,7 +11,7 @@ Struct defining the "minimal useful" subset of the full MetaMap output, with ann
 
 	
 type MetaMapping struct {
-	Phrases []Phrase `json:"phrases"`
+	Phrases []Phrase        `json:"phrases"`
 	ParseTime time.Duration `json:"parse_time"`
 }
 
@@ -31,11 +31,11 @@ type Mapping struct {
 	SemanticTypes []string `json:"semantic_types"`
 }
 
-func FromFullMMO(full *metamap.MMOs) *MetaMapping {
+func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
 	to_ret := &MetaMapping{}
-	for _, utt := range(full.MMO.Utterances.Utterances) {
+	for _, utt := range full.MMO.Utterances.Utterances {
 		// for each utterance:
-		for _, phr := range(utt.Phrases.Phrases) {
+		for _, phr := range utt.Phrases.Phrases {
 			if phr.Candidates.Total > 0 {
 				// for each phrase with mappings:
 				// set up a new phrase

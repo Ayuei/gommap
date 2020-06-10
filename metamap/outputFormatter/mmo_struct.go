@@ -1,4 +1,4 @@
-package metamap
+package outputFormatter
 
 import "time"
 
@@ -11,17 +11,17 @@ type MMOs struct {
 		CmdLine struct {
 			Command	string
 			Options struct {
-				Count int `xml:"Count,attr"`
-				Options	[]Option	`xml:"Option"`
+				Count int           `xml:"Count,attr"`
+				Options	[]Option `xml:"Option"`
 			}
 		}
 		Negations struct {
-			Count int `xml:"Count,attr"`
+			Count int            `xml:"Count,attr"`
 			Negations []Negation `xml:"Negation"`
 		}
 		
 		Utterances struct {
-			Count int `xml:"Count,attr"`
+			Count int              `xml:"Count,attr"`
 			Utterances []Utterance `xml:"Utterance"`
 		}
 	}
@@ -38,17 +38,17 @@ type Negation struct {
 	NegType string
 	NegTrigger string
 	NegTriggerPIs struct {
-		Count int `xml:"Count,attr"`
+		Count int                    `xml:"Count,attr"`
 		NegTriggerPIs []NegTriggerPI `xml:"NegTriggerPI"`
 	}
 	
 	NegConcepts struct {
-		Count int `xml:"Count,attr"`
+		Count int                `xml:"Count,attr"`
 		NegConcepts []NegConcept `xml:"NegConcept"`
 	}
 	
 	NegConcPIs struct {
-		Count int `xml:"Count,attr"`
+		Count int              `xml:"Count,attr"`
 		NegConcPIs []NegConcPI `xml:"NegConcPI"`
 	}
 }
@@ -76,7 +76,7 @@ type Utterance struct {
 	UttStartPos int
 	UttLength int
 	Phrases struct {
-		Count int `xml:"Count,attr"`
+		Count int        `xml:"Count,attr"`
 		Phrases []Phrase `xml:"Phrase"`
 	}
 }
@@ -84,16 +84,16 @@ type Utterance struct {
 type Phrase struct {
 	PhraseText string
 	SyntaxUnits struct {
-		Count int `xml:"Count,attr"`
+		Count int                `xml:"Count,attr"`
 		SyntaxUnits []SyntaxUnit `xml:"SyntaxUnit"`
 	}
 	PhraseStartPos int
 	PhraseLength int
 	Candidates struct {
-		Total int `xml:"Total,attr"`
-		Excluded int `xml:"Excluded,attr"`
-		Pruned int `xml:"Pruned,attr"`
-		Remaining int `xml:"Remaining"`
+		Total int              `xml:"Total,attr"`
+		Excluded int           `xml:"Excluded,attr"`
+		Pruned int             `xml:"Pruned,attr"`
+		Remaining int          `xml:"Remaining"`
 		Candidates []Candidate `xml:"Candidate"`
 	}
 }
@@ -123,7 +123,7 @@ type Candidate struct {
 		SemTypes []string `xml:"SemType"`
 	}
 	MatchMaps struct {
-		Count int `xml:"Count,attr"`
+		Count int            `xml:"Count,attr"`
 		MatchMaps []MatchMap `xml:"MatchMap"`
 	}
 	IsHead string

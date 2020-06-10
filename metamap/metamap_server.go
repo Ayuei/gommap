@@ -1,30 +1,22 @@
-package metamapServer
+package metamap
 
 import (
-	"os/exec"
-	"fmt"
-	"strings"
 	"bufio"
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"gommap/metamap/outputFormatter"
 	"io"
+	"os/exec"
 	"path"
 	"regexp"
-	"errors"
-	"net/http"
-	"metamap"
-	"metamap/mini" // metamap/mini
-	"encoding/xml"
-	"encoding/json"
-	"log"
+	"strings"
 	"time"
 )
 
-const MetamapHomeDir = "/Users/steven/Desktop/Hacking/mm/mm11/public_mm"
-const MetamapCmd = "bin/metamap11v2"
-const MetamapArgs = "--XMLf --silent"
-
 type MetamapInstance struct {
 	TextInput chan string
-	MappedOutput chan metamap.MMOs
+	MappedOutput chan outputFormatter.MMOs
 	Control chan bool
 }
 
@@ -36,16 +28,17 @@ func (m *MetamapInstance) Cleanup() {
 
 // spawn a new MetaMap slave process; returns struct with 
 // i/o and control channels
-func SpawnMetamap() *MetamapInstance {
+func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) *MetamapInstance {
 	in_channel := make(chan string)
-	res_channel := make(chan metamap.MMOs)
+	res_channel := make(chan outputFormatter.MMOs)
 	done_channel := make(chan bool)
-	
+
+	cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
+
 	// start up external metamap process
-	go handleMetamap(in_channel, res_channel, done_channel)
+	go handleMetamap(cmd, in_channel, res_channel, done_channel)
 	
 	return &MetamapInstance{in_channel, res_channel, done_channel}
-	
 }
 
 func readToEOM(from *bufio.Reader, eom *regexp.Regexp) (string, error) {
@@ -72,9 +65,9 @@ func readToEOM(from *bufio.Reader, eom *regexp.Regexp) (string, error) {
 
 
 
-func handleMetamap(text_to_map chan string, mapped_mmos chan metamap.MMOs, done chan bool) {
+func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outputFormatter.MMOs, done chan bool) {
 
-	cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
+	//cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
 	
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -128,11 +121,11 @@ func handleMetamap(text_to_map chan string, mapped_mmos chan metamap.MMOs, done 
 			buf_writer.WriteString(more_input + "\n\n")
 			buf_writer.Flush()
 			result, err = readToEOM(buf_reader, eom_regex)
-			decoded := &metamap.MMOs{}
-			xml.NewDecoder(strings.NewReader(result)).Decode(decoded)			
+			decoded := &outputFormatter.MMOs{}
+			_ = xml.NewDecoder(strings.NewReader(result)).Decode(decoded)
 			decoded.ParseTime = time.Since(start_time)
 			decoded.RawXML = result
-			mapped_mmos <- *decoded
+			mappedMmos <- *decoded
 		case <-done:
 			fmt.Println("done, time to kill")
 			// clean up
@@ -153,55 +146,55 @@ func handleMetamap(text_to_map chan string, mapped_mmos chan metamap.MMOs, done 
 
 
 // handle web service calls- invoke metamap, etc.
-func handler(w http.ResponseWriter, r *http.Request) {
-	str_to_map := r.FormValue("str")
-	str_to_map = strings.TrimSpace(str_to_map)
-	
-	// TODO: figure out a way to handle situations with multiple newlines in str_to_map; e.g. "sentence one.\n\n sentence two."
-	// Right now, MetaMap is processing these as two separate inputs, and since we only try and read one output, we're having problems.
-	
-	if len(str_to_map) == 0 {
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Println(w, "{}")
-		return
-	} else {
-		fmt.Println("About to try and map: ", str_to_map)
-		// get an instance from the pool
-		mm_instance := <- instance_pool
-		
-		mm_instance.TextInput <- str_to_map
-		temp_res := <- mm_instance.MappedOutput
-
-		// put our instance back on the pool
-		instance_pool <- mm_instance
-		
-		if r.FormValue("format") == "xml" {
-			// just send the xml
-			w.Header().Set("Content-Type", "text/xml")
-			fmt.Fprintln(w, temp_res.RawXML)
-		} else if r.FormValue("format") == "json" {
-			// turn into smaller, more compact JSON representation
-			smaller := mini.FromFullMMO(&temp_res)
-			json_bytes, _ := json.Marshal(smaller)
-			w.Header().Set("Content-Type", "application/json")
-			fmt.Fprintln(w, string(json_bytes))			
-		} else {
-			// for now, send XML
-			w.Header().Set("Content-Type", "text/xml")
-			fmt.Fprintln(w, temp_res.RawXML)
-		}
-		fmt.Println("Elapsed time: ", temp_res.ParseTime)
-	}
-}
-
-// set up basic logging of requests
-func Log(handler http.Handler) http.Handler { 
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { 
-        log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL) 
-		log.Printf("instance pool size: %d", len(instance_pool))
-handler.ServeHTTP(w, r) 
-    }) 
-} 
+//func handler(w http.ResponseWriter, r *http.Request) {
+//	str_to_map := r.FormValue("str")
+//	str_to_map = strings.TrimSpace(str_to_map)
+//
+//	// TODO: figure out a way to handle situations with multiple newlines in str_to_map; e.g. "sentence one.\n\n sentence two."
+//	// Right now, MetaMap is processing these as two separate inputs, and since we only try and read one output, we're having problems.
+//
+//	if len(str_to_map) == 0 {
+//		w.Header().Set("Content-Type", "application/json")
+//		fmt.Println(w, "{}")
+//		return
+//	} else {
+//		fmt.Println("About to try and map: ", str_to_map)
+//		// get an instance from the pool
+//		mm_instance := <- instance_pool
+//
+//		mm_instance.TextInput <- str_to_map
+//		temp_res := <- mm_instance.MappedOutput
+//
+//		// put our instance back on the pool
+//		instance_pool <- mm_instance
+//
+//		if r.FormValue("format") == "xml" {
+//			// just send the xml
+//			w.Header().Set("Content-Type", "text/xml")
+//			fmt.Fprintln(w, temp_res.RawXML)
+//		} else if r.FormValue("format") == "json" {
+//			// turn into smaller, more compact JSON representation
+//			smaller := mini.FromFullMMO(&temp_res)
+//			json_bytes, _ := json.Marshal(smaller)
+//			w.Header().Set("Content-Type", "application/json")
+//			fmt.Fprintln(w, string(json_bytes))
+//		} else {
+//			// for now, send XML
+//			w.Header().Set("Content-Type", "text/xml")
+//			fmt.Fprintln(w, temp_res.RawXML)
+//		}
+//		fmt.Println("Elapsed time: ", temp_res.ParseTime)
+//	}
+//}
+//
+//// set up basic logging of requests
+//func Log(handler http.Handler) http.Handler {
+//    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//        log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+//		log.Printf("instance pool size: %d", len(instance_pool))
+//handler.ServeHTTP(w, r)
+//    })
+//}
 
 // var instance_pool chan MetamapInstance
 // const MAX_INSTANCES = 5
@@ -228,4 +221,4 @@ handler.ServeHTTP(w, r)
 // 		this_instance.Cleanup()
 // 	}
 	
-}
+//}
