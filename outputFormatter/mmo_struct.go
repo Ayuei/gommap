@@ -1,155 +1,147 @@
 package outputFormatter
 
-import "time"
+import (
+	"encoding/xml"
+	"time"
+)
 
 /*
 Struct that matches the structure of MetaMap's XML output.
+Output from: https://www.onlinetool.io/xmltogo/
 */
 
 type MMOs struct {
-	MMO struct {
+	XMLName xml.Name `xml:"MMOs"`
+	Text    string   `xml:",chardata"`
+	MMO     struct {
+		Text    string `xml:",chardata"`
 		CmdLine struct {
-			Command	string
+			Text    string `xml:",chardata"`
+			Command string `xml:"Command"`
 			Options struct {
-				Count int           `xml:"Count,attr"`
-				Options	[]Option `xml:"Option"`
-			}
-		}
+				Text   string `xml:",chardata"`
+				Count  string `xml:"Count,attr"`
+				Option []struct {
+					Text     string `xml:",chardata"`
+					OptName  string `xml:"OptName"`
+					OptValue string `xml:"OptValue"`
+				} `xml:"Option"`
+			} `xml:"Options"`
+		} `xml:"CmdLine"`
+		AAs struct {
+			Text  string `xml:",chardata"`
+			Count string `xml:"Count,attr"`
+		} `xml:"AAs"`
 		Negations struct {
-			Count int            `xml:"Count,attr"`
-			Negations []Negation `xml:"Negation"`
-		}
-		
+			Text  string `xml:",chardata"`
+			Count string `xml:"Count,attr"`
+		} `xml:"Negations"`
 		Utterances struct {
-			Count int              `xml:"Count,attr"`
-			Utterances []Utterance `xml:"Utterance"`
-		}
-	}
+			Text      string `xml:",chardata"`
+			Count     string `xml:"Count,attr"`
+			Utterance []struct {
+				Text        string `xml:",chardata"`
+				PMID        string `xml:"PMID"`
+				UttSection  string `xml:"UttSection"`
+				UttNum      string `xml:"UttNum"`
+				UttText     string `xml:"UttText"`
+				UttStartPos string `xml:"UttStartPos"`
+				UttLength   string `xml:"UttLength"`
+				Phrases     struct {
+					Text   string `xml:",chardata"`
+					Count  string `xml:"Count,attr"`
+					Phrase []struct {
+						Text        string `xml:",chardata"`
+						PhraseText  string `xml:"PhraseText"`
+						SyntaxUnits struct {
+							Text       string `xml:",chardata"`
+							Count      string `xml:"Count,attr"`
+							SyntaxUnit []struct {
+								Text       string `xml:",chardata"`
+								SyntaxType string `xml:"SyntaxType"`
+								LexMatch   string `xml:"LexMatch"`
+								InputMatch string `xml:"InputMatch"`
+								LexCat     string `xml:"LexCat"`
+								Tokens     struct {
+									Text  string   `xml:",chardata"`
+									Count string   `xml:"Count,attr"`
+									Token []string `xml:"Token"`
+								} `xml:"Tokens"`
+							} `xml:"SyntaxUnit"`
+						} `xml:"SyntaxUnits"`
+						PhraseStartPos int `xml:"PhraseStartPos"`
+						PhraseLength   int `xml:"PhraseLength"`
+						Candidates     struct {
+							Text      string `xml:",chardata"`
+							Total     int `xml:"Total,attr"`
+							Excluded  int `xml:"Excluded,attr"`
+							Pruned    int `xml:"Pruned,attr"`
+							Remaining int `xml:"Remaining,attr"`
+						} `xml:"Candidates"`
+						Mappings struct {
+							Text    string `xml:",chardata"`
+							Count   string `xml:"Count,attr"`
+							Mapping []struct {
+								Text              string `xml:",chardata"`
+								MappingScore      string `xml:"MappingScore"`
+								MappingCandidates struct {
+									Text      string `xml:",chardata"`
+									Total     string `xml:"Total,attr"`
+									Candidate []struct {
+										Text               string `xml:",chardata"`
+										CandidateScore     string `xml:"CandidateScore"`
+										CandidateCUI       string `xml:"CandidateCUI"`
+										CandidateMatched   string `xml:"CandidateMatched"`
+										CandidatePreferred string `xml:"CandidatePreferred"`
+										MatchedWords       struct {
+											Text        string   `xml:",chardata"`
+											Count       string   `xml:"Count,attr"`
+											MatchedWord []string `xml:"MatchedWord"`
+										} `xml:"MatchedWords"`
+										SemTypes struct {
+											Text    string `xml:",chardata"`
+											Count   string `xml:"Count,attr"`
+											SemType []string `xml:"SemType"`
+										} `xml:"SemTypes"`
+										MatchMaps struct {
+											Text     string `xml:",chardata"`
+											Count    string `xml:"Count,attr"`
+											MatchMap []struct {
+												Text           string `xml:",chardata"`
+												TextMatchStart string `xml:"TextMatchStart"`
+												TextMatchEnd   string `xml:"TextMatchEnd"`
+												ConcMatchStart string `xml:"ConcMatchStart"`
+												ConcMatchEnd   string `xml:"ConcMatchEnd"`
+												LexVariation   string `xml:"LexVariation"`
+											} `xml:"MatchMap"`
+										} `xml:"MatchMaps"`
+										IsHead      string `xml:"IsHead"`
+										IsOverMatch string `xml:"IsOverMatch"`
+										Sources     struct {
+											Text   string   `xml:",chardata"`
+											Count  string   `xml:"Count,attr"`
+											Source []string `xml:"Source"`
+										} `xml:"Sources"`
+										ConceptPIs struct {
+											Text      string `xml:",chardata"`
+											Count     string `xml:"Count,attr"`
+											ConceptPI []struct {
+												Text     string `xml:",chardata"`
+												StartPos string `xml:"StartPos"`
+												Length   string `xml:"Length"`
+											} `xml:"ConceptPI"`
+										} `xml:"ConceptPIs"`
+										Status  string `xml:"Status"`
+										Negated string `xml:"Negated"`
+									} `xml:"Candidate"`
+								} `xml:"MappingCandidates"`
+							} `xml:"Mapping"`
+						} `xml:"Mappings"`
+					} `xml:"Phrase"`
+				} `xml:"Phrases"`
+			} `xml:"Utterance"`
+		} `xml:"Utterances"`
+	} `xml:"MMO"`
 	ParseTime time.Duration
-	RawXML string
+	RawXML    string
 }
-
-type Option struct {
-	OptName string
-	OptValue string
-}
-
-type Negation struct {
-	NegType string
-	NegTrigger string
-	NegTriggerPIs struct {
-		Count int                    `xml:"Count,attr"`
-		NegTriggerPIs []NegTriggerPI `xml:"NegTriggerPI"`
-	}
-	
-	NegConcepts struct {
-		Count int                `xml:"Count,attr"`
-		NegConcepts []NegConcept `xml:"NegConcept"`
-	}
-	
-	NegConcPIs struct {
-		Count int              `xml:"Count,attr"`
-		NegConcPIs []NegConcPI `xml:"NegConcPI"`
-	}
-}
-
-type NegTriggerPI struct {
-	StartPost int
-	Length int
-}
-
-type NegConcept struct {
-	NegConcCUI string
-	NegConcMatched string
-}
-
-type NegConcPI struct {
-	StartPos int
-	Length int
-}
-
-type Utterance struct {
-	PMID string
-	UttSection string
-	UttNum int
-	UttText string
-	UttStartPos int
-	UttLength int
-	Phrases struct {
-		Count int        `xml:"Count,attr"`
-		Phrases []Phrase `xml:"Phrase"`
-	}
-}
-
-type Phrase struct {
-	PhraseText string
-	SyntaxUnits struct {
-		Count int                `xml:"Count,attr"`
-		SyntaxUnits []SyntaxUnit `xml:"SyntaxUnit"`
-	}
-	PhraseStartPos int
-	PhraseLength int
-	Candidates struct {
-		Total int              `xml:"Total,attr"`
-		Excluded int           `xml:"Excluded,attr"`
-		Pruned int             `xml:"Pruned,attr"`
-		Remaining int          `xml:"Remaining"`
-		Candidates []Candidate `xml:"Candidate"`
-	}
-}
-
-type SyntaxUnit struct {
-	SyntaxType string
-	LexMatch string
-	InputMatch string
-	LexCat string
-	Tokens struct {
-		Count int `xml:"Count,attr"`
-		Tokens []string `xml:"Token"`
-	}
-}
-
-type Candidate struct {
-	CandidateScore int
-	CandidateCUI string
-	CandidateMatched string
-	CandidatePreferred string
-	MatchedWords struct {
-		Count int `xml:"Count,attr"`
-		MatchedWords []string `xml:"MatchedWord"`
-	}
-	SemTypes struct {
-		Count int `xml:"Count,attr"`
-		SemTypes []string `xml:"SemType"`
-	}
-	MatchMaps struct {
-		Count int            `xml:"Count,attr"`
-		MatchMaps []MatchMap `xml:"MatchMap"`
-	}
-	IsHead string
-	IsOverMatch string
-	Sources struct {
-		Count int `xml:"Count,attr"`
-		Sources []string `xml:"Source"`
-	}
-	ConceptPIs struct {
-		Count int `xml:"Count,attr"`
-		ConceptPIs []ConceptPI
-	}
-	Status int
-}
-
-type MatchMap struct {
-	TextMatchStart int
-	TextMatchEnd int
-	ConcMatchStart int
-	ConcMatchEnd int
-	LexVariation int
-}
-
-type ConceptPI struct {
-	StartPos int
-	Length int
-}
-
-

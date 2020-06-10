@@ -33,30 +33,32 @@ type Mapping struct {
 
 func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
 	to_ret := &MetaMapping{}
-	for _, utt := range full.MMO.Utterances.Utterances {
+	for _, utt := range full.MMO.Utterances.Utterance {
 		// for each utterance:
-		for _, phr := range utt.Phrases.Phrases {
+		for _, phr := range utt.Phrases.Phrase {
 			if phr.Candidates.Total > 0 {
 				// for each phrase with mappings:
 				// set up a new phrase
-				this_p := &Phrase{}
-				this_p.Text = phr.PhraseText
-				this_p.Offsets.Start = phr.PhraseStartPos
-				this_p.Offsets.Length = phr.PhraseLength
-				for _, cand := range(phr.Candidates.Candidates) {
-					this_m := &Mapping{}
-					this_m.CUI = cand.CandidateCUI
-					this_m.ConceptName = cand.CandidateMatched
-					this_m.PreferredName = cand.CandidatePreferred
-					for _, st := range(cand.SemTypes.SemTypes) {
-						full_st := SemanticTypeMap()[st]
-						// full_st := st
-						this_m.SemanticTypes = append(this_m.SemanticTypes, full_st)
+				thisP := &Phrase{}
+				thisP.Text = phr.PhraseText
+				thisP.Offsets.Start = phr.PhraseStartPos
+				thisP.Offsets.Length = phr.PhraseLength
+				for _, mapping := range phr.Mappings.Mapping {
+					for _, cand := range mapping.MappingCandidates.Candidate {
+						this_m := &Mapping{}
+						this_m.CUI = cand.CandidateCUI
+						this_m.ConceptName = cand.CandidateMatched
+						this_m.PreferredName = cand.CandidatePreferred
+						for _, st := range cand.SemTypes.SemType {
+							full_st := SemanticTypeMap()[st]
+							// full_st := st
+							this_m.SemanticTypes = append(this_m.SemanticTypes, full_st)
+						}
+						// this_m.SemanticTypes = cand.SemTypes.SemTypes
+						thisP.Mappings = append(thisP.Mappings, *this_m)
 					}
-					// this_m.SemanticTypes = cand.SemTypes.SemTypes
-					this_p.Mappings = append(this_p.Mappings, *this_m)
 				}
-				to_ret.Phrases = append(to_ret.Phrases, *this_p)
+				to_ret.Phrases = append(to_ret.Phrases, *thisP)
 			}
 		}
 	}
