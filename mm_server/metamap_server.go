@@ -1,4 +1,4 @@
-package main
+package metamapServer
 
 import (
 	"os/exec"
@@ -203,29 +203,29 @@ handler.ServeHTTP(w, r)
     }) 
 } 
 
-var instance_pool chan MetamapInstance
-const MAX_INSTANCES = 5
+// var instance_pool chan MetamapInstance
+// const MAX_INSTANCES = 5
 
-func main() {
-	
-	instance_pool = make(chan MetamapInstance, 5)
-	for i := 0; i < MAX_INSTANCES; i++ {
-		fmt.Println("Setting up instance", i)
-		instance_pool <- *SpawnMetamap()
-	}
-
+// func main() {
+// 	
+// 	instance_pool = make(chan MetamapInstance, 5)
+// 	for i := 0; i < MAX_INSTANCES; i++ {
+// 		fmt.Println("Setting up instance", i)
+// 		instance_pool <- *SpawnMetamap()
+// 	}
+// 
 
 	// we use StripPrefix so that /tmpfiles/somefile will access /tmp/somefile
-	http.Handle("/tmpfiles/", http.StripPrefix("/tmpfiles/", http.FileServer(http.Dir("/tmp"))))
-	http.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(http.Dir("./mm_ui"))))
-	http.HandleFunc("/parsed", handler)
-    http.ListenAndServe(":8080", Log(http.DefaultServeMux)) 
-	
+// 	http.Handle("/tmpfiles/", http.StripPrefix("/tmpfiles/", http.FileServer(http.Dir("/tmp"))))
+// 	http.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(http.Dir("./mm_ui"))))
+// 	http.HandleFunc("/parsed", handler)
+//     http.ListenAndServe(":8080", Log(http.DefaultServeMux)) 
+// 	
 	// clean up instances in pool
-	for len(instance_pool) > 0 {
-		// drain an instance and tell it to clean up
-		this_instance := <-instance_pool
-		this_instance.Cleanup()
-	}
+// 	for len(instance_pool) > 0 {
+// 		// drain an instance and tell it to clean up
+// 		this_instance := <-instance_pool
+// 		this_instance.Cleanup()
+// 	}
 	
 }
