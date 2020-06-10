@@ -1,11 +1,11 @@
-package metamap
+package gommap
 
 import (
 	"bufio"
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/ayuei/gommap/metamap/outputFormatter"
+	"gommap/outputFormatter"
 	"io"
 	"os/exec"
 	"path"
