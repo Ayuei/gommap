@@ -1,7 +1,7 @@
 package gommap
 
 import (
-	"gommap/outputFormatter"
+	"github.com/ayuei/gommap/outputFormatter"
 	"time"
 )
 
