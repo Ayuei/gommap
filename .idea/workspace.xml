@@ -1,7 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="427640ea-5741-443a-975c-d1aece46230f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/mini/mini.go" beforeDir="false" afterPath="$PROJECT_DIR$/metamap/minimalFormatter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mm_server/metamap_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/metamap/metamap_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mm_server/mm_ui/ajax-loader.gif" beforeDir="false" afterPath="$PROJECT_DIR$/mm_ui/ajax-loader.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mm_server/mm_ui/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/mm_ui/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mmo_struct.go" beforeDir="false" afterPath="$PROJECT_DIR$/metamap/outputFormatter/mmo_struct.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="E:/Programs/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1d7IV2FpWnU8QiddYPohDucjCFc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Vin\go\src\gommap\mm_server" />
+      <recent name="C:\Users\Vin\go\src\gommap\utils\outputFormat" />
+      <recent name="C:\Users\Vin\go\src\gommap\utils" />
+    </key>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
   </component>
 </project>

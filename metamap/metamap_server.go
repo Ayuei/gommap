@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"gommap/metamap/outputFormatter"
+	"github.com/ayuei/gommap/metamap/outputFormatter"
 	"io"
 	"os/exec"
 	"path"

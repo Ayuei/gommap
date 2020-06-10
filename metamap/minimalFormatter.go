@@ -1,7 +1,7 @@
 package metamap
 
 import (
-	"gommap/metamap/outputFormatter"
+	"github.com/ayuei/gommap/metamap/outputFormatter"
 	"time"
 )
 
