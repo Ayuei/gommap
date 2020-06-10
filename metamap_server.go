@@ -130,6 +130,7 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 			decoded.ParseTime = time.Since(start_time)
 			decoded.RawXML = result
 			mappedMmos <- *decoded
+			fmt.Println("Finished processing")
 			break // Process until done
 		case <-done:
 			fmt.Println("done, time to kill")
