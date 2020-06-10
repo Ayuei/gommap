@@ -62,7 +62,7 @@ func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
 			}
 		}
 	}
-	to_ret.ParseTime = full.ParseTime
+	// to_ret.ParseTime = full.ParseTime
 	return to_ret
 }
 

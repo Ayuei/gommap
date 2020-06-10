@@ -11,7 +11,6 @@ import (
 	"path"
 	"regexp"
 	"strings"
-	"time"
 )
 
 type MetamapInstance struct {
@@ -119,16 +118,16 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 
 	for {
 		select {
-		case more_input := <-text_to_map:
-			fmt.Println("got input: ---->", more_input, "<-----")
-			start_time := time.Now()
-			buf_writer.WriteString(more_input + "\n\n")
+		case moreInput := <-text_to_map:
+			fmt.Println("got input: ---->", moreInput, "<-----")
+			//startTime := time.Now()
+			buf_writer.WriteString(moreInput + "\n\n")
 			buf_writer.Flush()
 			result, err = readToEOM(buf_reader, eom_regex)
 			decoded := &outputFormatter.MMOs{}
 			_ = xml.NewDecoder(strings.NewReader(result)).Decode(decoded)
-			decoded.ParseTime = time.Since(start_time)
-			decoded.RawXML = result
+			//decoded.ParseTime = time.Since(startTime)
+			//decoded.RawXML = result
 			mappedMmos <- *decoded
 			fmt.Println("Finished processing")
 			break // Process until done
