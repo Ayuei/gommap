@@ -11,6 +11,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type MetamapInstance struct {
@@ -79,7 +80,6 @@ func readToEOM(from *bufio.Reader, eom *regexp.Regexp) (string, error) {
 
 
 func (m *MetamapInstance) Start() {
-
 	cmd := m.Cmd
 
 	stdout, err := cmd.StdoutPipe()
@@ -111,7 +111,7 @@ func (m *MetamapInstance) Start() {
 	buf_writer.WriteString("monkeys\n\n")
 	buf_writer.Flush()
 	
-	// now there's another line ready to read, plus a bunch of crap
+	// now there's another line ready to read
 	_, err = buf_reader.ReadString('\n')
 	if err != nil {
 		fmt.Printf("Error reading second line: %s\n", err.Error())
@@ -132,13 +132,13 @@ func (m *MetamapInstance) Start() {
 			id := item.ID
 			text := item.text
 			fmt.Println("got input: ---->", text, "<-----")
-			//startTime := time.Now()
+			startTime := time.Now()
 			buf_writer.WriteString(text+ "\n\n")
 			buf_writer.Flush()
 			result, err = readToEOM(buf_reader, eom_regex)
 			decoded := &outputFormatter.MMOs{}
 			_ = xml.NewDecoder(strings.NewReader(result)).Decode(decoded)
-			//decoded.ParseTime = time.Since(startTime)
+			decoded.ParseTime = time.Since(startTime)
 			//decoded.RawXML = result
 			decoded.ItemID = id
 			m.Output <- decoded
@@ -159,9 +159,6 @@ func (m *MetamapInstance) Start() {
 	}
 
 }
-
-
-
 
 
 // handle web service calls- invoke metamap, etc.
