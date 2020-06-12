@@ -13,6 +13,7 @@ Struct defining the "minimal useful" subset of the full MetaMap output, with ann
 type MetaMapping struct {
 	Phrases []Phrase        `json:"phrases"`
 	ParseTime time.Duration `json:"parse_time"`
+	ID string
 }
 
 type Phrase struct {
@@ -63,6 +64,7 @@ func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
 		}
 	}
 	// to_ret.ParseTime = full.ParseTime
+	toRet.ID = full.ItemID
 	return toRet
 }
 
