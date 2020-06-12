@@ -134,7 +134,9 @@ func (m *MetamapInstance) Start() {
 		select {
 		case item := <-m.Input:
 			id := item.ID
-			text := item.text
+
+			// Sanitize input
+			text := strings.ReplaceAll(item.text, "\n", "")
 			fmt.Println("got input: ---->", text, "<-----")
 			startTime := time.Now()
 			buf_writer.WriteString(text+ "\n\n")
@@ -161,7 +163,6 @@ func (m *MetamapInstance) Start() {
 			break
 		}
 	}
-
 }
 
 
