@@ -32,7 +32,7 @@ type Mapping struct {
 }
 
 func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
-	to_ret := &MetaMapping{}
+	toRet := &MetaMapping{}
 	for _, utt := range full.MMO.Utterances.Utterance {
 		// for each utterance:
 		for _, phr := range utt.Phrases.Phrase {
@@ -58,12 +58,12 @@ func FromFullMMO(full *outputFormatter.MMOs) *MetaMapping {
 						thisP.Mappings = append(thisP.Mappings, *this_m)
 					}
 				}
-				to_ret.Phrases = append(to_ret.Phrases, *thisP)
+				toRet.Phrases = append(toRet.Phrases, *thisP)
 			}
 		}
 	}
 	// to_ret.ParseTime = full.ParseTime
-	return to_ret
+	return toRet
 }
 
 /*

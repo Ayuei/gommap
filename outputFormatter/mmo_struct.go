@@ -144,4 +144,5 @@ type MMOs struct {
 	} `xml:"MMO"`
 	ParseTime time.Duration
 	RawXML    string
+	ItemID string
 }

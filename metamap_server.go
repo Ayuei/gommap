@@ -14,9 +14,17 @@ import (
 )
 
 type MetamapInstance struct {
-	TextInput chan string
-	MappedOutput chan outputFormatter.MMOs
+	Input chan *ItemInput
+	Output chan *outputFormatter.MMOs
 	Control chan bool
+	Cmd *exec.Cmd
+	IsProcessing bool
+}
+
+// Text with identifier
+type ItemInput struct {
+	ID string
+	text string
 }
 
 func (m *MetamapInstance) SendClose(){
@@ -24,24 +32,27 @@ func (m *MetamapInstance) SendClose(){
 }
 
 func (m *MetamapInstance) Cleanup() {
-	close(m.TextInput)
-	close(m.MappedOutput)
+	close(m.Input)
+	close(m.Output)
 	close(m.Control)	
 }
 
 // spawn a new MetaMap slave process; returns struct with 
 // i/o and control channels
 func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) *MetamapInstance {
-	in_channel := make(chan string, 100)
-	res_channel := make(chan outputFormatter.MMOs)
+	in_channel := make(chan *ItemInput, 100)
+	res_channel := make(chan *outputFormatter.MMOs)
 	done_channel := make(chan bool)
 
 	cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
 
-	// start up external metamap process
-	go handleMetamap(cmd, in_channel, res_channel, done_channel)
-	
-	return &MetamapInstance{in_channel, res_channel, done_channel}
+	return &MetamapInstance{
+		Input: in_channel,
+		Output: res_channel,
+		Control: done_channel,
+		Cmd: cmd,
+		IsProcessing: false,
+	}
 }
 
 func readToEOM(from *bufio.Reader, eom *regexp.Regexp) (string, error) {
@@ -67,11 +78,10 @@ func readToEOM(from *bufio.Reader, eom *regexp.Regexp) (string, error) {
 }
 
 
+func (m *MetamapInstance) Start() {
 
-func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outputFormatter.MMOs, done chan bool) {
+	cmd := m.Cmd
 
-	//cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
-	
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Printf("Error with stdoutpipe!: %s", err.Error())
@@ -118,20 +128,23 @@ func handleMetamap(cmd *exec.Cmd, text_to_map chan string, mappedMmos chan outpu
 
 	for {
 		select {
-		case moreInput := <-text_to_map:
-			fmt.Println("got input: ---->", moreInput, "<-----")
+		case item := <-m.Input:
+			id := item.ID
+			text := item.text
+			fmt.Println("got input: ---->", text, "<-----")
 			//startTime := time.Now()
-			buf_writer.WriteString(moreInput + "\n\n")
+			buf_writer.WriteString(text+ "\n\n")
 			buf_writer.Flush()
 			result, err = readToEOM(buf_reader, eom_regex)
 			decoded := &outputFormatter.MMOs{}
 			_ = xml.NewDecoder(strings.NewReader(result)).Decode(decoded)
 			//decoded.ParseTime = time.Since(startTime)
 			//decoded.RawXML = result
-			mappedMmos <- *decoded
+			decoded.ItemID = id
+			m.Output <- decoded
 			fmt.Println("Finished processing")
 			break // Process until done
-		case <-done:
+		case <-m.Control:
 			fmt.Println("done, time to kill")
 			// clean up
 			fmt.Println("Trying to kill...")
