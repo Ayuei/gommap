@@ -38,6 +38,10 @@ func (m *MetamapInstance) Cleanup() {
 	close(m.Control)	
 }
 
+func (m *MetamapInstance) AddItem(ID string, text string){
+	m.Input <- &ItemInput{ID, text}
+}
+
 // spawn a new MetaMap slave process; returns struct with 
 // i/o and control channels
 func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) *MetamapInstance {
