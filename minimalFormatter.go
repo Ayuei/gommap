@@ -9,7 +9,6 @@ import (
 Struct defining the "minimal useful" subset of the full MetaMap output, with annotations for useful JSON output.
 */
 
-	
 type MetaMapping struct {
 	Phrases []Phrase        `json:"phrases"`
 	ParseTime time.Duration `json:"parse_time"`

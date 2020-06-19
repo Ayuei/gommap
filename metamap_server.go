@@ -19,7 +19,7 @@ type MetamapInstance struct {
 	Output chan *outputFormatter.MMOs
 	Control chan bool
 	Cmd *exec.Cmd
-	IsProcessing bool
+	counter int
 }
 
 // Text with identifier
@@ -40,14 +40,22 @@ func (m *MetamapInstance) Cleanup() {
 
 func (m *MetamapInstance) AddItem(ID string, text string){
 	m.Input <- &ItemInput{ID, text}
+	m.counter += 1
 }
 
 // spawn a new MetaMap slave process; returns struct with 
 // i/o and control channels
-func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) *MetamapInstance {
-	in_channel := make(chan *ItemInput, 100)
-	res_channel := make(chan *outputFormatter.MMOs)
-	done_channel := make(chan bool)
+func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string, capacity ...int) *MetamapInstance {
+	cap := 100
+
+	if len(capacity) == 1 {
+		cap = capacity[0]
+	}
+
+	// Buffered channels, so they are non-blocking
+	in_channel := make(chan *ItemInput, cap)
+	res_channel := make(chan *outputFormatter.MMOs, cap)
+	done_channel := make(chan bool, 1)
 
 	cmd := exec.Command(path.Join(MetamapHomeDir, MetamapCmd), MetamapArgs)
 
@@ -56,7 +64,7 @@ func SpawnMetamap(MetamapHomeDir string, MetamapCmd string, MetamapArgs string) 
 		Output: res_channel,
 		Control: done_channel,
 		Cmd: cmd,
-		IsProcessing: false,
+		counter: 0,
 	}
 }
 
@@ -129,6 +137,7 @@ func (m *MetamapInstance) Start() {
 	result, err := readToEOM(buf_reader, eom_regex)
 	
 	// ok, now we can start looking for input
+	closeCount := 1
 
 	for {
 		select {
@@ -148,9 +157,16 @@ func (m *MetamapInstance) Start() {
 			//decoded.RawXML = result
 			decoded.ItemID = id
 			m.Output <- decoded
+			m.counter -= 1
 			fmt.Println("Finished processing")
 			break // Process until done
 		case <-m.Control:
+			if m.counter > 0 && closeCount < 2 { // Send close 3 times to force close
+				// Still processing
+				closeCount += 1
+				break
+			}
+
 			fmt.Println("done, time to kill")
 			// clean up
 			fmt.Println("Trying to kill...")
