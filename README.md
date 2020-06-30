@@ -9,3 +9,4 @@
 - [ ] More documentation
 - [x] Currently, the `MMOs` struct in `mmo_struct.go` doesn't capture all of the data in MetaMap's output. 
 - [x] Refactoring- `mm_server` should only handle network-related stuff, the actual MetaMap I/O should be handled elsewhere.
+- [ ] Complete refactor of backend as it seems really slow.
